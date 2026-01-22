@@ -279,6 +279,21 @@ export default class Companion extends Plugin {
 			ch: view.editor.getLine(view.editor.lastLine()).length,
 		});
 
+		// Only trigger completion if user has started typing a new sentence
+		// Don't trigger right after sentence-ending punctuation with no new content
+		const lastChars = prefix.slice(-50); // Check last 50 chars
+		const sentenceEndPattern = /[.!?]\s*$/; // Ends with punctuation and optional whitespace
+		const newSentencePattern = /[.!?]\s+\w{2,}$/; // Punctuation + space + at least 2 chars typed
+
+		if (sentenceEndPattern.test(lastChars) && !newSentencePattern.test(lastChars)) {
+			// Just finished a sentence, haven't started typing new one yet
+			yield {
+				display_suggestion: "",
+				complete_suggestion: "",
+			};
+			return;
+		}
+
 		yield* this.complete(prefix, suffix);
 	}
 

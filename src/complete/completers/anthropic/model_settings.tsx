@@ -16,10 +16,10 @@ export type Settings = z.infer<typeof settings_schema>;
 
 const default_settings: Settings = {
 	system_prompt:
-		"You are an AI code completion assistant. Complete the text inline with a short, natural continuation. Only write the completion text - do not repeat the user's text. Keep completions brief and contextual.",
+		"You are an autocomplete system. Your job is to predict what the user will type next. Only output the continuation from the cursor position - never repeat or regenerate existing text. Output only the exact next words, nothing else.",
 	user_prompt: "{{prefix}}",
-	max_tokens: 20,
-	temperature: 0.7,
+	max_tokens: 15,
+	temperature: 0.3,
 	prompt_length: 100000,
 };
 

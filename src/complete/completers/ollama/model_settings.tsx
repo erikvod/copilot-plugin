@@ -6,7 +6,6 @@ export const settings_schema = z.object({
 	system_prompt: z.string(),
 	user_prompt: z.string(),
 	temperature: z.number().optional(),
-	prompt_length: z.number().optional(),
 });
 
 export type Settings = z.infer<typeof settings_schema>;

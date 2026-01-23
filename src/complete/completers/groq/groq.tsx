@@ -48,7 +48,7 @@ export default class GroqModel implements Model {
 
 	async prepare(
 		prompt: Prompt,
-		settings: ModelSettings
+		_settings: ModelSettings
 	): Promise<{
 		prefix: string;
 		suffix: string;
@@ -57,8 +57,8 @@ export default class GroqModel implements Model {
 		vault_context: string;
 	}> {
 		const cropped = {
-			prefix: prompt.prefix.slice(-(settings.prompt_length || 6000)),
-			suffix: prompt.suffix.slice(0, settings.prompt_length || 6000),
+			prefix: prompt.prefix.slice(-6000),
+			suffix: prompt.suffix.slice(0, 6000),
 		};
 		const last_line = cropped.prefix
 			.split("\n")
@@ -129,7 +129,7 @@ export default class GroqModel implements Model {
 			),
 			model: this.id,
 			temperature: model_settings.temperature,
-			max_tokens: prompt.max_tokens || model_settings.max_tokens || 50,
+			max_tokens: prompt.max_tokens || 50,
 		});
 
 		return this.interpret(
@@ -149,7 +149,7 @@ export default class GroqModel implements Model {
 			messages: this.formulate_messages(prompt_data, model_settings),
 			model: this.id,
 			temperature: model_settings.temperature,
-			max_tokens: prompt.max_tokens || model_settings.max_tokens || 50,
+			max_tokens: prompt.max_tokens || 50,
 			stream: true,
 		});
 

@@ -6,10 +6,6 @@ export const settings_schema = z.object({
 	system_prompt: z.string(),
 	user_prompt: z.string(),
 	temperature: z.number().optional(),
-	top_p: z.number().optional(),
-	presence_penalty: z.number().optional(),
-	frequency_penalty: z.number().optional(),
-	prompt_length: z.number().optional(),
 });
 
 export type Settings = z.infer<typeof settings_schema>;
@@ -48,17 +44,6 @@ export function SettingsUI({
 
 	return (
 		<>
-			<SettingsItem name="Rate limits" />
-			<p>
-				If you're getting rate limit errors, I can't really help. OpenAI
-				doesn't like you using their API too much. You can either{" "}
-				<a href="https://platform.openai.com/account/billing/overview">
-					upgrade your plan
-				</a>{" "}
-				or set up a fallback preset. A fallback will be used while the
-				plugin waits for the rate limit to reset; scroll down to the
-				"Presets" section to set one up.
-			</p>
 			<SettingsItem name="System prompt" />
 			<textarea
 				className="ai-complete-chatgpt-full-width"
@@ -98,86 +83,6 @@ export function SettingsUI({
 							JSON.stringify({
 								...parsed_settings,
 								temperature: parseFloat(e.target.value),
-							})
-						)
-					}
-				/>
-			</SettingsItem>
-			<SettingsItem name="Top P">
-				<input
-					type="number"
-					value={
-						parsed_settings.top_p === undefined
-							? ""
-							: parsed_settings.top_p
-					}
-					onChange={(e) =>
-						saveSettings(
-							JSON.stringify({
-								...parsed_settings,
-								top_p: parseFloat(e.target.value),
-							})
-						)
-					}
-				/>
-			</SettingsItem>
-			<SettingsItem name="Presence penalty">
-				<input
-					type="number"
-					value={
-						parsed_settings.presence_penalty === undefined
-							? ""
-							: parsed_settings.presence_penalty
-					}
-					onChange={(e) =>
-						saveSettings(
-							JSON.stringify({
-								...parsed_settings,
-								presence_penalty: parseFloat(e.target.value),
-							})
-						)
-					}
-				/>
-			</SettingsItem>
-			<SettingsItem name="Frequency penalty">
-				<input
-					type="number"
-					value={
-						parsed_settings.frequency_penalty === undefined
-							? ""
-							: parsed_settings.frequency_penalty
-					}
-					onChange={(e) =>
-						saveSettings(
-							JSON.stringify({
-								...parsed_settings,
-								frequency_penalty: parseFloat(e.target.value),
-							})
-						)
-					}
-				/>
-			</SettingsItem>
-			<SettingsItem
-				name="Prompt length"
-				description={
-					<>
-						The length of both the prefix and the suffix of the
-						prompt, in characters.
-					</>
-				}
-			>
-				<input
-					type="number"
-					value={
-						parsed_settings.prompt_length === undefined
-							? ""
-							: parsed_settings.prompt_length
-					}
-					onChange={(e) =>
-						saveSettings(
-							JSON.stringify({
-								...parsed_settings,
-								prompt_length: parseInt(e.target.value),
 							})
 						)
 					}

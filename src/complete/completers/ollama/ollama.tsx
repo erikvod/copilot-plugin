@@ -40,7 +40,7 @@ export default class OllamaModel implements Model {
 
 	async prepare(
 		prompt: Prompt,
-		settings: ModelSettings
+		_settings: ModelSettings
 	): Promise<{
 		prefix: string;
 		suffix: string;
@@ -49,8 +49,8 @@ export default class OllamaModel implements Model {
 		vault_context: string;
 	}> {
 		const cropped = {
-			prefix: prompt.prefix.slice(-(settings.prompt_length || 6000)),
-			suffix: prompt.suffix.slice(0, settings.prompt_length || 6000),
+			prefix: prompt.prefix.slice(-6000),
+			suffix: prompt.suffix.slice(0, 6000),
 		};
 		const last_line = cropped.prefix
 			.split("\n")

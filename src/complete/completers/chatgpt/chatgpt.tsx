@@ -35,14 +35,14 @@ export default class ChatGPT implements Model {
 		this.provider_settings = parse_provider_settings(provider_settings);
 	}
 
-	async prepare(prompt: Prompt, settings: ModelSettings): Promise<{
+	async prepare(prompt: Prompt, _settings: ModelSettings): Promise<{
 		prefix: string;
 		suffix: string;
 		vault_context: string;
 	}> {
 		return {
-			prefix: prompt.prefix.slice(-(settings.prompt_length || 6000)),
-			suffix: prompt.suffix.slice(0, settings.prompt_length || 6000),
+			prefix: prompt.prefix.slice(-6000),
+			suffix: prompt.suffix.slice(0, 6000),
 			vault_context: prompt.vault_context || "",
 		};
 	}
@@ -70,20 +70,11 @@ export default class ChatGPT implements Model {
 	model_parameters(model_settings: {
 		user_prompt: string;
 		system_prompt: string;
-		presence_penalty?: number;
-		frequency_penalty?: number;
-		top_p?: number;
 		temperature?: number;
 	}): {
-		presence_penalty?: number;
-		frequency_penalty?: number;
-		top_p?: number;
 		temperature?: number;
 	} {
 		return {
-			presence_penalty: model_settings.presence_penalty,
-			frequency_penalty: model_settings.frequency_penalty,
-			top_p: model_settings.top_p,
 			temperature: model_settings.temperature,
 		};
 	}

@@ -6,8 +6,6 @@ export const settings_schema = z.object({
 	system_prompt: z.string(),
 	user_prompt: z.string(),
 	temperature: z.number().optional(),
-	prompt_length: z.number().optional(),
-	max_tokens: z.number().optional(),
 });
 
 export type Settings = z.infer<typeof settings_schema>;
@@ -21,7 +19,6 @@ Context about this vault:
 {{{vault_context}}}
 {{/vault_context}}`,
 	user_prompt: "{{prefix}}",
-	max_tokens: 100,
 };
 
 export const parse_settings = (data: string | null): Settings => {
@@ -86,24 +83,6 @@ export function SettingsUI({
 							JSON.stringify({
 								...parsed_settings,
 								temperature: parseFloat(e.target.value),
-							})
-						)
-					}
-				/>
-			</SettingsItem>
-			<SettingsItem name="Prompt length">
-				<input
-					type="number"
-					value={
-						parsed_settings.prompt_length === undefined
-							? ""
-							: parsed_settings.prompt_length
-					}
-					onChange={(e) =>
-						saveSettings(
-							JSON.stringify({
-								...parsed_settings,
-								prompt_length: parseFloat(e.target.value),
 							})
 						)
 					}

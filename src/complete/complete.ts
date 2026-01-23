@@ -3,6 +3,7 @@ import * as React from "react";
 export interface Prompt {
 	prefix: string;
 	suffix: string;
+	vault_context?: string;
 }
 
 export interface Model {

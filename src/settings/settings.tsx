@@ -4,6 +4,7 @@ import { available } from "../complete/completers";
 import { useState, useEffect } from "react";
 import Companion, { AcceptSettings } from "../main";
 import SettingsItem from "../components/SettingsItem";
+import { VaultContextSettingsUI } from "./vault-context-settings";
 
 function Presets({
 	plugin,
@@ -623,6 +624,7 @@ export default function SettingsComponent({
 					plugin={plugin}
 					reload_signal={reload_signal}
 				/>
+				<VaultContextSettingsUI plugin={plugin} />
 			</>
 			<ProviderModelChooser
 				plugin={plugin}

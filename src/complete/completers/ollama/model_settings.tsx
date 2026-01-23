@@ -12,9 +12,14 @@ export const settings_schema = z.object({
 export type Settings = z.infer<typeof settings_schema>;
 
 const default_settings: Settings = {
-	system_prompt: "",
-	user_prompt:
-		'{{#context}}Context:\n\n{{context}}\n\n=================================\n{{/context}}Do not start with "...". Continue the following paragraph:\n\n{{last_line}}',
+	system_prompt:
+		`You are helping write notes in Obsidian. Continue this sentence naturally and precisely. Only provide the completion, not the full sentence.
+{{#vault_context}}
+
+Context about this vault:
+{{{vault_context}}}
+{{/vault_context}}`,
+	user_prompt: "{{prefix}}",
 };
 
 export const parse_settings = (data: string | null): Settings => {

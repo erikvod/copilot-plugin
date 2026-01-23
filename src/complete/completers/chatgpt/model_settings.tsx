@@ -16,8 +16,13 @@ export type Settings = z.infer<typeof settings_schema>;
 
 const default_settings: Settings = {
 	system_prompt:
-		"You are trying to give a long suggestion on how to complete the user's message. Complete in the language of the original message. Write only the completion and nothing else. Do not include the user's text in your message. Only include the completion.",
-	user_prompt: "Continue the following:\n\n{{prefix}}",
+		`You are helping write notes in Obsidian. Continue this sentence naturally and precisely. Only provide the completion, not the full sentence.
+{{#vault_context}}
+
+Context about this vault:
+{{{vault_context}}}
+{{/vault_context}}`,
+	user_prompt: "{{prefix}}",
 };
 
 export const parse_settings = (data: string | null): Settings => {

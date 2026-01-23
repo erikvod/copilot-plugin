@@ -35,15 +35,15 @@ export default class ChatGPT implements Model {
 		this.provider_settings = parse_provider_settings(provider_settings);
 	}
 
-	async prepare(prompt: Prompt, settings: ModelSettings): Promise<Prompt> {
-		// I'm taking the easy way out here and just truncating the prompt
-		// Do I really have a choice? I can't even count the tokens - the tokenizer
-		// is not available for javascript, apart from through a weird wasm trick
-		// TODO: make this work properly, with context from other notes
-
+	async prepare(prompt: Prompt, settings: ModelSettings): Promise<{
+		prefix: string;
+		suffix: string;
+		vault_context: string;
+	}> {
 		return {
 			prefix: prompt.prefix.slice(-(settings.prompt_length || 6000)),
 			suffix: prompt.suffix.slice(0, settings.prompt_length || 6000),
+			vault_context: prompt.vault_context || "",
 		};
 	}
 
@@ -54,17 +54,15 @@ export default class ChatGPT implements Model {
 			user_prompt: string;
 		}
 	): Promise<{ role: "system" | "user"; content: string }[]> {
+		const prepared = await this.prepare(prompt, model_settings);
 		return [
 			{
 				role: "system",
-				content: model_settings.system_prompt,
+				content: Mustache.render(model_settings.system_prompt, prepared),
 			},
 			{
 				role: "user",
-				content: Mustache.render(
-					model_settings.user_prompt,
-					await this.prepare(prompt, model_settings)
-				),
+				content: Mustache.render(model_settings.user_prompt, prepared),
 			},
 		];
 	}

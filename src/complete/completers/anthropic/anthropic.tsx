@@ -49,6 +49,7 @@ export default class AnthropicModel implements Model {
 		suffix: string;
 		last_line: string;
 		context: string;
+		vault_context: string;
 	}> {
 		const cropped = {
 			prefix: prompt.prefix.slice(-(settings.prompt_length || 6000)),
@@ -65,6 +66,7 @@ export default class AnthropicModel implements Model {
 				.split("\n")
 				.filter((x) => x !== last_line)
 				.join("\n"),
+			vault_context: prompt.vault_context || "",
 		};
 	}
 
@@ -74,6 +76,7 @@ export default class AnthropicModel implements Model {
 			suffix: string;
 			last_line: string;
 			context: string;
+			vault_context: string;
 		},
 		settings: ModelSettings
 	): { role: "user"; content: string }[] {
@@ -88,6 +91,23 @@ export default class AnthropicModel implements Model {
 		];
 	}
 
+	formulate_system_prompt(
+		prompt: {
+			prefix: string;
+			suffix: string;
+			last_line: string;
+			context: string;
+			vault_context: string;
+		},
+		settings: ModelSettings
+	): string | undefined {
+		if (!settings.system_prompt) return undefined;
+		return Mustache.render(settings.system_prompt, {
+			...prompt,
+			...(settings as any),
+		});
+	}
+
 	async complete(prompt: Prompt, settings: string): Promise<string> {
 		const model_settings = parse_model_settings(settings);
 		const prompt_data = await this.prepare(prompt, model_settings);
@@ -95,7 +115,7 @@ export default class AnthropicModel implements Model {
 		try {
 			const response = await this.anthropic.messages.create({
 				model: this.id,
-				system: model_settings.system_prompt || undefined,
+				system: this.formulate_system_prompt(prompt_data, model_settings),
 				messages: this.formulate_messages(prompt_data, model_settings),
 				max_tokens: model_settings.max_tokens || 50,
 				temperature: model_settings.temperature,
@@ -122,7 +142,7 @@ export default class AnthropicModel implements Model {
 		try {
 			const stream = await this.anthropic.messages.create({
 				model: this.id,
-				system: model_settings.system_prompt || undefined,
+				system: this.formulate_system_prompt(prompt_data, model_settings),
 				messages: this.formulate_messages(prompt_data, model_settings),
 				max_tokens: model_settings.max_tokens || 50,
 				temperature: model_settings.temperature,

@@ -16,9 +16,14 @@ export type Settings = z.infer<typeof settings_schema>;
 
 const default_settings: Settings = {
 	system_prompt:
-		"You are an autocomplete system. Your job is to predict what the user will type next. Only output the continuation from the cursor position - never repeat or regenerate existing text. Output only the exact next words, nothing else.",
+		`You are helping write notes in Obsidian. Continue this sentence naturally and precisely. Only provide the completion, not the full sentence.
+{{#vault_context}}
+
+Context about this vault:
+{{{vault_context}}}
+{{/vault_context}}`,
 	user_prompt: "{{prefix}}",
-	max_tokens: 15,
+	max_tokens: 50,
 	temperature: 0.3,
 	prompt_length: 100000,
 };

@@ -54,6 +54,7 @@ export default class GroqModel implements Model {
 		suffix: string;
 		last_line: string;
 		context: string;
+		vault_context: string;
 	}> {
 		const cropped = {
 			prefix: prompt.prefix.slice(-(settings.prompt_length || 6000)),
@@ -70,17 +71,28 @@ export default class GroqModel implements Model {
 				.split("\n")
 				.filter((x) => x !== last_line)
 				.join("\n"),
+			vault_context: prompt.vault_context || "",
 		};
 	}
 
 	formulate_system_message(
+		prompt: {
+			prefix: string;
+			suffix: string;
+			last_line: string;
+			context: string;
+			vault_context: string;
+		},
 		settings: ModelSettings
 	): ChatCompletionMessageParam[] {
 		return settings.system_prompt.length
 			? [
 					{
 						role: "system",
-						content: settings.system_prompt,
+						content: Mustache.render(settings.system_prompt, {
+							...prompt,
+							...(settings as any),
+						}),
 					},
 			  ]
 			: [];
@@ -92,10 +104,11 @@ export default class GroqModel implements Model {
 			suffix: string;
 			last_line: string;
 			context: string;
+			vault_context: string;
 		},
 		settings: ModelSettings
 	): ChatCompletionMessageParam[] {
-		return this.formulate_system_message(settings).concat([
+		return this.formulate_system_message(prompt, settings).concat([
 			{
 				role: "user",
 				content: Mustache.render(settings.user_prompt, {

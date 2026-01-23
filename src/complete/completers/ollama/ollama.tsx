@@ -46,6 +46,7 @@ export default class OllamaModel implements Model {
 		suffix: string;
 		last_line: string;
 		context: string;
+		vault_context: string;
 	}> {
 		const cropped = {
 			prefix: prompt.prefix.slice(-(settings.prompt_length || 6000)),
@@ -62,11 +63,13 @@ export default class OllamaModel implements Model {
 				.split("\n")
 				.filter((x) => x !== last_line)
 				.join("\n"),
+			vault_context: prompt.vault_context || "",
 		};
 	}
 
 	async complete(prompt: Prompt, settings: string): Promise<string> {
 		const model_settings = parse_model_settings(settings);
+		const prompt_data = await this.prepare(prompt, model_settings);
 
 		const response = await requestUrl({
 			url: this.provider_settings.endpoint + "/api/generate",
@@ -75,11 +78,8 @@ export default class OllamaModel implements Model {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				prompt: Mustache.render(
-					model_settings.user_prompt,
-					await this.prepare(prompt, model_settings)
-				),
-				system: model_settings.system_prompt,
+				prompt: Mustache.render(model_settings.user_prompt, prompt_data),
+				system: Mustache.render(model_settings.system_prompt, prompt_data),
 				model: this.id,
 				stream: false,
 				options: {
@@ -140,7 +140,7 @@ export default class OllamaModel implements Model {
 					model_settings.user_prompt,
 					prompt_data
 				),
-				system: model_settings.system_prompt,
+				system: Mustache.render(model_settings.system_prompt, prompt_data),
 				model: this.id,
 				stream: true,
 				options: {

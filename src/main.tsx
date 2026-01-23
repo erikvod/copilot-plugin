@@ -17,6 +17,7 @@ import SettingsComponent from "./settings/settings";
 import { CompletionCacher } from "./cache";
 import { available } from "./complete/completers";
 import { Model } from "./complete/complete";
+import { VaultContextManager } from "./vault-context";
 
 interface CompanionModelSettings {
 	name: string;
@@ -34,6 +35,13 @@ export interface AcceptSettings {
 	min_accept_length: number;
 	min_display_length: number;
 	retrigger_threshold: number;
+}
+
+export interface VaultContextSettings {
+	enabled: boolean;
+	max_context_tokens: number;
+	include_patterns: string[];
+	exclude_patterns: string[];
 }
 
 interface CompanionSettings {
@@ -54,6 +62,7 @@ interface CompanionSettings {
 	};
 	presets: CompanionModelSettings[];
 	fallback: string | null;
+	vault_context: VaultContextSettings;
 }
 
 const DEFAULT_SETTINGS: CompanionSettings = {
@@ -74,6 +83,12 @@ const DEFAULT_SETTINGS: CompanionSettings = {
 	provider_settings: {},
 	presets: [],
 	fallback: null,
+	vault_context: {
+		enabled: false,
+		max_context_tokens: 2000,
+		include_patterns: ["**/*.md"],
+		exclude_patterns: ["templates/**"],
+	},
 };
 
 export default class Companion extends Plugin {
@@ -87,6 +102,7 @@ export default class Companion extends Plugin {
 		cacher: CompletionCacher;
 	}[] = [];
 	statusBarItemEl: HTMLElement | null = null;
+	vaultContextManager: VaultContextManager | null = null;
 
 	async setupModelChoice() {
 		await this.loadSettings();
@@ -172,8 +188,22 @@ export default class Companion extends Plugin {
 		await this.setupSuggestions();
 		await this.setupStatusbar();
 		await this.setupSuggestionCommands();
+		await this.setupVaultContext();
 
 		this.addSettingTab(new CompanionSettingsTab(this.app, this));
+	}
+
+	async setupVaultContext() {
+		this.vaultContextManager = new VaultContextManager(this.app, this);
+		await this.vaultContextManager.initialize();
+
+		this.addCommand({
+			id: "rebuild-vault-context",
+			name: "Rebuild vault context",
+			callback: () => {
+				this.vaultContextManager?.rebuild();
+			},
+		});
 	}
 
 	onunload() {}
@@ -370,10 +400,12 @@ export default class Companion extends Plugin {
 		const cacher = await this.get_model(provider, model);
 		if (!cacher) throw { name: "ModelNotFound" };
 		await this.load_model(cacher);
+		const vault_context = this.vaultContextManager?.getContext() ?? undefined;
 		for await (let completion of cacher.complete(
 			{
 				prefix: prefix,
 				suffix: suffix,
+				vault_context: vault_context,
 			},
 			this.settings.stream
 		)) {

@@ -1,4 +1,4 @@
-# CoPilot
+# Copilot Plugin
 
 AI-powered autocomplete for Obsidian with support for ChatGPT, Claude, Groq, and Ollama.
 
@@ -27,13 +27,13 @@ AI-powered autocomplete for Obsidian with support for ChatGPT, Claude, Groq, and
 ### From Obsidian Community Plugins
 
 1. Open **Settings** > **Community plugins** in Obsidian
-2. Click **Browse** and search for "CoPilot"
+2. Click **Browse** and search for "Copilot Plugin"
 3. Click **Install**, then **Enable**
 
 ### Manual Installation
 
-1. Download the latest release from the [releases page](https://github.com/erikvod/obsidian-copilot/releases)
-2. Extract the files to your vault's `.obsidian/plugins/obsidian-copilot/` folder
+1. Download the latest release from the [releases page](https://github.com/erikvod/copilot-plugin/releases)
+2. Extract the files to your vault's `.obsidian/plugins/copilot-plugin/` folder
 3. Enable the plugin in **Settings** > **Community plugins**
 
 ## Quick Start

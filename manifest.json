@@ -1,6 +1,6 @@
 {
-	"id": "copilot",
-	"name": "CoPilot",
+	"id": "copilot-plugin",
+	"name": "Copilot Plugin",
 	"version": "1.0.1",
 	"minAppVersion": "1.1.16",
 	"description": "Autocomplete with AI using ChatGPT, Claude, Groq, or Ollama through a copilot-like interface.",

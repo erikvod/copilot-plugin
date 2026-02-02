@@ -1,6 +1,6 @@
 {
-	"name": "copilot-plugin",
-	"version": "1.0.1",
+	"name": "copilot",
+	"version": "1.0.3",
 	"description": "Autocomplete with AI using ChatGPT, Claude, Groq, or Ollama through a copilot-like interface.",
 	"main": "main.js",
 	"scripts": {
